@@ -21,13 +21,13 @@ spinBtn.addEventListener("click", () => {
   let score = 0;
   if (results.every(s => s === results[0])) {
     score = 810; // 大当たりは200点に変更
-    resultDiv.textContent = "🎉 大当たり！ +200点";
+    resultDiv.textContent = "🎉 大当たり！ +810点";
   } else if (new Set(results).size === 2) {
     score = 60; // 2つ揃い
-    resultDiv.textContent = "✨ チャンス！ +30点";
+    resultDiv.textContent = "✨ チャンス！ +60点";
   } else {
     score = -5; // ハズレでも参加点
-    resultDiv.textContent = "😢 ハズレ... +10点";
+    resultDiv.textContent = "😢 ハズレ... -5点";
   }
 
   currentScore += score;
