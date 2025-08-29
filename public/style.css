@@ -106,3 +106,33 @@ button {
   font-weight: bold;
   color: #555;
 }
+
+.item-panel {
+  background: #e0f7fa;
+  padding: 15px;
+  margin-top: 20px;
+  border-radius: 8px;
+  max-width: 400px;
+}
+
+.item-panel h2, .item-panel h3 {
+  margin: 5px 0;
+}
+
+#itemsList li {
+  margin: 5px 0;
+}
+
+#itemsList button {
+  margin-left: 10px;
+  padding: 4px 8px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+#itemsList button:hover {
+  background-color: #45a049;
+}
+
