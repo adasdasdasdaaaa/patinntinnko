@@ -201,3 +201,53 @@ function calculateBipScore() {
 // --- イベント ---
 bipSpinBtn.addEventListener("click", startBipSpin);
 bipStopBtns.forEach((btn, i) => btn.addEventListener("click", () => stopBipReel(i)));
+// アイテム管理
+const buyGeodeBtn = document.getElementById("buyGeode");
+const itemsList = document.getElementById("itemsList");
+
+let inventory = [];
+
+// 購入
+buyGeodeBtn.addEventListener("click", () => {
+  if (currentScore < 1000) {
+    alert("お金が足りません！");
+    return;
+  }
+  currentScore -= 1000;
+  inventory.push("ジオード");
+  updateInventory();
+});
+
+// インベントリ表示更新
+function updateInventory() {
+  itemsList.innerHTML = "";
+  inventory.forEach((item, index) => {
+    const li = document.createElement("li");
+    li.textContent = item;
+    const useBtn = document.createElement("button");
+    useBtn.textContent = "使う";
+    useBtn.addEventListener("click", () => useItem(index));
+    li.appendChild(useBtn);
+    itemsList.appendChild(li);
+  });
+}
+
+// アイテム使用
+function useItem(index) {
+  const item = inventory[index];
+  if (item === "ジオード") {
+    // ランダムで報酬
+    const rand = Math.random() * 100;
+    let reward = 0;
+    if (rand <= 1) reward = 100000;       // 1%
+    else if (rand <= 6) reward = 10000;   // 5%
+    else reward = 0;                       // 94%
+    
+    alert(`ジオードを開けた！ +${reward}円`);
+    currentScore += reward;
+  }
+
+  // 使用済みアイテム削除
+  inventory.splice(index, 1);
+  updateInventory();
+}
