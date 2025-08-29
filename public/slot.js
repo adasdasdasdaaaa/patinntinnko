@@ -1,38 +1,64 @@
 const socket = io();
 
 const symbols = ["🍒", "🍋", "🍊", "🍉", "⭐", "7️⃣"];
-const reels = [document.getElementById("reel1"), document.getElementById("reel2"), document.getElementById("reel3")];
+const reels = [
+  document.getElementById("reel1"),
+  document.getElementById("reel2"),
+  document.getElementById("reel3")
+];
+const stopBtns = [
+  document.getElementById("stop1"),
+  document.getElementById("stop2"),
+  document.getElementById("stop3")
+];
 const spinBtn = document.getElementById("spinBtn");
 const publishBtn = document.getElementById("publishBtn");
 const resultDiv = document.getElementById("result");
 const playerNameInput = document.getElementById("playerName");
 const rankingList = document.getElementById("rankingList");
 
-let currentScore = 100; // 初期スコア100点
-const costPerSpin = 10; // 回すごとに10ポイント消費
+let currentScore = 100;
+const costPerSpin = 10;
+let intervals = []; // 各リールの回転用
 
-// スロットを回す
-spinBtn.addEventListener("click", () => {
+function startSpin() {
   if (currentScore < costPerSpin) {
     resultDiv.textContent = "⚠ スコアが足りません！";
     return;
   }
+  currentScore -= costPerSpin;
+  resultDiv.textContent = "";
 
-  currentScore -= costPerSpin; // 回すごとに消費
-
-  const results = reels.map(r => {
-    const symbol = symbols[Math.floor(Math.random() * symbols.length)];
-    r.textContent = symbol;
-    return symbol;
+  // 各リールを回す
+  reels.forEach((reel, i) => {
+    intervals[i] = setInterval(() => {
+      reel.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+    }, 100);
   });
 
-  let gain = 0; // 今回の得点
+  // ボタン活性化
+  stopBtns.forEach(btn => btn.disabled = false);
+}
+
+function stopReel(index) {
+  clearInterval(intervals[index]);
+  stopBtns[index].disabled = true;
+
+  // 全リール止まったら判定
+  if (stopBtns.every(btn => btn.disabled)) {
+    calculateScore();
+  }
+}
+
+function calculateScore() {
+  const results = reels.map(r => r.textContent);
+  let gain = 0;
 
   if (results.every(s => s === results[0])) {
-    gain = 810; // 大当たり
+    gain = 200; // 大当たり
     resultDiv.textContent = `🎉 大当たり！ +${gain}点`;
   } else if (new Set(results).size === 2) {
-    gain = 50; // 2つ揃い
+    gain = 30; // 2つ揃い
     resultDiv.textContent = `✨ チャンス！ +${gain}点`;
   } else {
     gain = 0; // ハズレ
@@ -41,6 +67,14 @@ spinBtn.addEventListener("click", () => {
 
   currentScore += gain;
   resultDiv.textContent += ` | 現在のスコア: ${currentScore}`;
+}
+
+// スタートボタン
+spinBtn.addEventListener("click", startSpin);
+
+// 各リールの止めボタン
+stopBtns.forEach((btn, i) => {
+  btn.addEventListener("click", () => stopReel(i));
 });
 
 // ランキングに送信
