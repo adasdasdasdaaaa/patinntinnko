@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="utf-8" />
-  <title>パチスロ</title>
+  <title>パチスロ演出付き</title>
   <link rel="stylesheet" href="/style.css" />
   <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
   <script src="/slot.js" defer></script>
@@ -10,11 +10,20 @@
 <body>
   <h1>🎰 パチスロ 🎰</h1>
   <div class="slot-container">
-    <div id="reel1" class="reel">🍒</div>
-    <div id="reel2" class="reel">🍋</div>
-    <div id="reel3" class="reel">🍊</div>
+    <div class="reel-container">
+      <div id="reel1" class="reel">🍒</div>
+      <button id="stop1">止める</button>
+    </div>
+    <div class="reel-container">
+      <div id="reel2" class="reel">🍋</div>
+      <button id="stop2">止める</button>
+    </div>
+    <div class="reel-container">
+      <div id="reel3" class="reel">🍊</div>
+      <button id="stop3">止める</button>
+    </div>
   </div>
-  <button id="spinBtn">回す！</button>
+  <button id="spinBtn">スタート</button>
   <button id="publishBtn">ランキングに掲載</button>
 
   <div id="result"></div>
