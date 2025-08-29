@@ -1,5 +1,6 @@
 const socket = io();
 
+// --- スロット用 ---
 const symbols = ["🍒", "🍋", "🍊", "🍉", "⭐", "7️⃣"];
 const reels = [
   document.getElementById("reel1"),
@@ -17,15 +18,15 @@ const resultDiv = document.getElementById("result");
 const playerNameInput = document.getElementById("playerName");
 const rankingList = document.getElementById("rankingList");
 
-// 効果音
+// --- 効果音 ---
 const stopSound = new Audio("/sounds/決定ボタンを押す7.mp3");
-const bigWinSound = new Audio("/sounds/bigwin.mp3"); // 任意で大当たり音
+// const bigWinSound = new Audio("/sounds/bigwin.mp3"); // 任意で大当たり音
 
 let currentScore = 100;
 const costPerSpin = 10;
-let intervals = []; // 各リールの回転用
+let intervals = [];
 
-// スロット回転開始
+// --- スロット回転 ---
 function startSpin() {
   if (currentScore < costPerSpin) {
     resultDiv.textContent = "⚠ スコアが足りません！";
@@ -43,12 +44,11 @@ function startSpin() {
   stopBtns.forEach(btn => btn.disabled = false);
 }
 
-// 各リール停止
+// --- 各リール停止 ---
 function stopReel(index) {
   clearInterval(intervals[index]);
   stopBtns[index].disabled = true;
 
-  // 止める音を再生
   stopSound.currentTime = 0;
   stopSound.play();
 
@@ -57,49 +57,40 @@ function stopReel(index) {
   }
 }
 
-// スコア計算＆演出
+// --- スコア計算＆演出 ---
 function calculateScore() {
   const results = reels.map(r => r.textContent);
   let gain = 0;
 
-  // 3つ揃い
   if (results.every(s => s === results[0])) {
-    gain = 810; // 大当たり
+    gain = 810;
     resultDiv.textContent = `🎉 大当たり！ +${gain}点`;
-
-    // 光る演出
     document.body.classList.add("flash");
     setTimeout(() => document.body.classList.remove("flash"), 1500);
-
-    // 大当たり音（任意）
-    // bigWinSound.play();
+    // bigWinSound.play(); // 任意で大当たり音
   } else if (new Set(results).size === 2) {
-    gain = 70; // 2つ揃い
+    gain = 50;
     resultDiv.textContent = `✨ チャンス！ +${gain}点`;
   } else {
     gain = 0;
     resultDiv.textContent = `😢 ハズレ... +0点`;
   }
 
-  currentScore = Number(currentScore) + Number(gain);
+  currentScore += gain;
   resultDiv.textContent += ` | 現在のスコア: ${currentScore}`;
 }
 
-// スタートボタン
+// --- スロット操作 ---
 spinBtn.addEventListener("click", startSpin);
+stopBtns.forEach((btn, i) => btn.addEventListener("click", () => stopReel(i)));
 
-// 各リールの止めボタン
-stopBtns.forEach((btn, i) => {
-  btn.addEventListener("click", () => stopReel(i));
-});
-
-// ランキングに送信
+// --- ランキング送信 ---
 publishBtn.addEventListener("click", () => {
   const name = playerNameInput.value.trim() || "名無し";
-  socket.emit("score", { name, score: Number(currentScore) });
+  socket.emit("score", { name, score: currentScore });
 });
 
-// ランキングを受信
+// --- ランキング受信 ---
 socket.on("ranking", (data) => {
   rankingList.innerHTML = "";
   data.forEach((entry, i) => {
@@ -107,4 +98,30 @@ socket.on("ranking", (data) => {
     li.textContent = `${i + 1}位: ${entry.name} - ${entry.score}点`;
     rankingList.appendChild(li);
   });
+});
+
+// --- FX 投資欄 ---
+const fxInvestBtn = document.getElementById("fxInvestBtn");
+const fxAmount = document.getElementById("fxAmount");
+const fxResult = document.getElementById("fxResult");
+
+fxInvestBtn.addEventListener("click", () => {
+  let amount = Number(fxAmount.value);
+  if (isNaN(amount) || amount <= 0) {
+    fxResult.textContent = "⚠ 投資額を正しく入力してください";
+    return;
+  }
+
+  // -50%～+50% の損益
+  const rate = (Math.random() - 0.5) * 2;
+  const profit = Math.floor(amount * rate);
+
+  // スロットスコアに反映
+  currentScore += profit;
+
+  fxResult.textContent = `結果: ${profit >= 0 ? "利益" : "損失"} ${profit}点 | 現在スコア: ${currentScore}`;
+
+  // ランキング自動送信
+  const name = playerNameInput.value.trim() || "名無し";
+  socket.emit("score", { name, score: currentScore });
 });
