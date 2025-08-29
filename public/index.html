@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <title>パチスロ</title>
+  <link rel="stylesheet" href="/style.css" />
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <script src="/slot.js" defer></script>
+</head>
+<body>
+  <h1>🎰 パチスロ 🎰</h1>
+  <div class="slot-container">
+    <div id="reel1" class="reel">🍒</div>
+    <div id="reel2" class="reel">🍋</div>
+    <div id="reel3" class="reel">🍊</div>
+  </div>
+  <button id="spinBtn">回す！</button>
+
+  <div id="result"></div>
+
+  <div class="ranking">
+    <h2>🏆 ランキング</h2>
+    <ul id="rankingList"></ul>
+  </div>
+
+  <div class="player">
+    <input id="playerName" placeholder="名前を入力" />
+  </div>
+</body>
+</html>
