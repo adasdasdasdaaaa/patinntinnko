@@ -26,7 +26,6 @@ let currentScore = 100;
 const costPerSpin = 10;
 let intervals = [];
 
-// --- スロット回転 ---
 function startSpin() {
   if (currentScore < costPerSpin) {
     resultDiv.textContent = "⚠ スコアが足りません！";
@@ -35,12 +34,18 @@ function startSpin() {
   currentScore -= costPerSpin;
   resultDiv.textContent = "";
 
+  // 🎵 回転BGM再生
+  spinMusic.currentTime = 0;
+  spinMusic.play();
+
+  // 各リールを回す
   reels.forEach((reel, i) => {
     intervals[i] = setInterval(() => {
       reel.textContent = symbols[Math.floor(Math.random() * symbols.length)];
     }, 100);
   });
 
+  // ボタン活性化
   stopBtns.forEach(btn => btn.disabled = false);
 }
 
@@ -57,28 +62,33 @@ function stopReel(index) {
   }
 }
 
-// --- スコア計算＆演出 ---
 function calculateScore() {
   const results = reels.map(r => r.textContent);
   let gain = 0;
 
+  // 🎵 全部止まったらBGMストップ
+  spinMusic.pause();
+  spinMusic.currentTime = 0;
+
+  // 判定処理
   if (results.every(s => s === results[0])) {
     gain = 810;
     resultDiv.textContent = `🎉 大当たり！ +${gain}点`;
+
     document.body.classList.add("flash");
     setTimeout(() => document.body.classList.remove("flash"), 1500);
-    // bigWinSound.play(); // 任意で大当たり音
   } else if (new Set(results).size === 2) {
-    gain = 50;
+    gain = 100;
     resultDiv.textContent = `✨ チャンス！ +${gain}点`;
   } else {
     gain = 0;
     resultDiv.textContent = `😢 ハズレ... +0点`;
   }
 
-  currentScore += gain;
+  currentScore = Number(currentScore) + Number(gain);
   resultDiv.textContent += ` | 現在のスコア: ${currentScore}`;
 }
+
 
 // --- スロット操作 ---
 spinBtn.addEventListener("click", startSpin);
