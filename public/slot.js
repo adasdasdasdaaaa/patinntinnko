@@ -54,9 +54,14 @@ function calculateScore() {
   const results = reels.map(r => r.textContent);
   let gain = 0;
 
+  // 3つ揃い
   if (results.every(s => s === results[0])) {
     gain = 810; // 大当たり
     resultDiv.textContent = `🎉 大当たり！ +${gain}点`;
+
+    // 光る演出
+    document.body.classList.add("flash");
+    setTimeout(() => document.body.classList.remove("flash"), 1500); // 3回分で削除
   } else if (new Set(results).size === 2) {
     gain = 20; // 2つ揃い
     resultDiv.textContent = `✨ チャンス！ +${gain}点`;
@@ -65,7 +70,7 @@ function calculateScore() {
     resultDiv.textContent = `😢 ハズレ... +0点`;
   }
 
-  currentScore += gain;
+  currentScore = Number(currentScore) + Number(gain);
   resultDiv.textContent += ` | 現在のスコア: ${currentScore}`;
 }
 
