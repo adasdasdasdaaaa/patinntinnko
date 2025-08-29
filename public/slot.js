@@ -63,7 +63,7 @@ function calculateScore() {
     document.body.classList.add("flash");
     setTimeout(() => document.body.classList.remove("flash"), 1500); // 3回分で削除
   } else if (new Set(results).size === 2) {
-    gain = 20; // 2つ揃い
+    gain = 100; // 2つ揃い
     resultDiv.textContent = `✨ チャンス！ +${gain}点`;
   } else {
     gain = 0; // ハズレ
