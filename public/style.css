@@ -1,0 +1,45 @@
+body {
+  font-family: sans-serif;
+  text-align: center;
+  background: #222;
+  color: #fff;
+}
+
+h1 {
+  margin-top: 20px;
+}
+
+.slot-container {
+  display: flex;
+  justify-content: center;
+  margin: 20px;
+  font-size: 3rem;
+}
+
+.reel {
+  margin: 0 10px;
+  padding: 20px;
+  background: #333;
+  border-radius: 10px;
+  width: 80px;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 1.2rem;
+  margin: 20px;
+  cursor: pointer;
+}
+
+.ranking {
+  margin-top: 30px;
+}
+
+#rankingList {
+  list-style: none;
+  padding: 0;
+}
+
+.player {
+  margin-top: 20px;
+}
