@@ -68,9 +68,27 @@
     <h3>持ち物</h3>
     <ul id="itemsList"></ul>
   </div>
+
+　</div>
+<div class="race-panel">
+  <h2>競馬ミニゲーム</h2>
+  <label>掛け金: <input type="number" id="betAmount" value="100"></label>
+  <label>馬選択:
+    <select id="selectedHorse">
+      <option value="1">🐴 1号馬</option>
+      <option value="2">🐎 2号馬</option>
+      <option value="3">🐎 3号馬</option>
+    </select>
+  </label>
+  <button id="startRaceBtn">レース開始</button>
+  <div id="raceTrack">
+    <div id="horse1">🐴</div>
+    <div id="horse2">🐎</div>
+    <div id="horse3">🐎</div>
+  </div>
+  <div id="raceResult"></div>
 </div>
 
-    
   </div>
 </body>
 </html>
