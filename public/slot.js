@@ -259,10 +259,10 @@ const raceResult = document.getElementById("raceResult");
 
 // 馬情報
 const horsesData = [
-  { name: "1号馬", speed: 10, stamina: 8 },
-  { name: "2号馬", speed: 9, stamina: 9 },
-  { name: "3号馬", speed: 8, stamina: 10 },
-  { name: "4号馬", speed: 7, stamina: 11 }
+  { name: "1号馬", speed: 9, stamina: 12 },
+  { name: "2号馬", speed: 9, stamina: 11 },
+  { name: "3号馬", speed: 9, stamina: 11 },
+  { name: "4号馬", speed: 8, stamina: 13 }
 ];
 
 // 選択肢に反映
