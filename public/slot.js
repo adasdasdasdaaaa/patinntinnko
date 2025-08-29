@@ -125,3 +125,79 @@ fxInvestBtn.addEventListener("click", () => {
   const name = playerNameInput.value.trim() || "名無し";
   socket.emit("score", { name, score: currentScore });
 });
+
+// --- BIPスロット ---
+const bipSymbols = ["🍒", "🍋", "🍊", "🍉", "⭐", "7️⃣"];
+const bipReels = [
+  document.getElementById("bipReel1"),
+  document.getElementById("bipReel2"),
+  document.getElementById("bipReel3")
+];
+const bipStopBtns = [
+  document.getElementById("bipStop1"),
+  document.getElementById("bipStop2"),
+  document.getElementById("bipStop3")
+];
+const bipSpinBtn = document.getElementById("bipSpinBtn");
+const bipResultDiv = document.getElementById("bipResult");
+
+let bipIntervals = [];
+const bipCost = 10000;
+
+function startBipSpin() {
+  if (currentScore < bipCost) {
+    bipResultDiv.textContent = "⚠ スコアが足りません！";
+    return;
+  }
+  currentScore -= bipCost;
+  bipResultDiv.textContent = "";
+
+  bipReels.forEach((reel, i) => {
+    bipIntervals[i] = setInterval(() => {
+      reel.textContent = bipSymbols[Math.floor(Math.random() * bipSymbols.length)];
+    }, 100);
+  });
+
+  bipStopBtns.forEach(btn => btn.disabled = false);
+}
+
+function stopBipReel(index) {
+  clearInterval(bipIntervals[index]);
+  bipStopBtns[index].disabled = true;
+
+  stopSound.currentTime = 0;
+  stopSound.play();
+
+  if (bipStopBtns.every(btn => btn.disabled)) {
+    calculateBipScore();
+  }
+}
+
+function calculateBipScore() {
+  const results = bipReels.map(r => r.textContent);
+  let gain = 0;
+
+  if (results.every(s => s === results[0])) {
+    gain = 8100000;
+    bipResultDiv.textContent = `🎉 BIP大当たり！ +${gain}点`;
+    document.body.classList.add("flash");
+    setTimeout(() => document.body.classList.remove("flash"), 1500);
+  } else if (new Set(results).size === 2) {
+    gain = 40000;
+    bipResultDiv.textContent = `✨ BIPチャンス！ +${gain}点`;
+  } else {
+    gain = 0;
+    bipResultDiv.textContent = `😢 ハズレ... +0点`;
+  }
+
+  currentScore += gain;
+  bipResultDiv.textContent += ` | 現在スコア: ${currentScore}`;
+
+  // ランキング送信
+  const name = playerNameInput.value.trim() || "名無し";
+  socket.emit("score", { name, score: currentScore });
+}
+
+// --- イベント ---
+bipSpinBtn.addEventListener("click", startBipSpin);
+bipStopBtns.forEach((btn, i) => btn.addEventListener("click", () => stopBipReel(i)));
