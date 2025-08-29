@@ -55,10 +55,10 @@ function calculateScore() {
   let gain = 0;
 
   if (results.every(s => s === results[0])) {
-    gain = 200; // 大当たり
+    gain = 810; // 大当たり
     resultDiv.textContent = `🎉 大当たり！ +${gain}点`;
   } else if (new Set(results).size === 2) {
-    gain = 30; // 2つ揃い
+    gain = 20; // 2つ揃い
     resultDiv.textContent = `✨ チャンス！ +${gain}点`;
   } else {
     gain = 0; // ハズレ
