@@ -1,0 +1,22 @@
+body {
+  text-align: center;
+  font-family: sans-serif;
+}
+
+.slot {
+  display: flex;
+  justify-content: center;
+  font-size: 3rem;
+  margin: 20px;
+}
+
+.reel {
+  border: 2px solid #333;
+  padding: 20px;
+  margin: 5px;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
