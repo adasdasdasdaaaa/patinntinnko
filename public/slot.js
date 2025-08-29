@@ -252,18 +252,39 @@ function useItem(index) {
   updateInventory();
 }
 
-const startRaceBtn = document.getElementById("startRaceBtn");
-const betAmount = document.getElementById("betAmount");
+const raceTrack = document.getElementById("raceTrack");
 const selectedHorse = document.getElementById("selectedHorse");
+const startRaceBtn = document.getElementById("startRaceBtn");
 const raceResult = document.getElementById("raceResult");
-const horses = [
-  document.getElementById("horse1"),
-  document.getElementById("horse2"),
-  document.getElementById("horse3")
+
+// 馬情報
+const horsesData = [
+  { name: "1号馬", speed: 10, stamina: 8 },
+  { name: "2号馬", speed: 9, stamina: 9 },
+  { name: "3号馬", speed: 8, stamina: 10 },
+  { name: "4号馬", speed: 7, stamina: 11 }
 ];
 
+// 選択肢に反映
+horsesData.forEach((h, i) => {
+  const opt = document.createElement("option");
+  opt.value = i;
+  opt.textContent = h.name;
+  selectedHorse.appendChild(opt);
+
+  const div = document.createElement("div");
+  div.id = `horse${i}`;
+  div.textContent = "🐎";
+  div.style.position = "absolute";
+  div.style.left = "0%";
+  div.style.top = `${i*30}px`;
+  div.style.transition = "left 0.5s linear";
+  raceTrack.appendChild(div);
+});
+
+// レース開始
 startRaceBtn.addEventListener("click", () => {
-  const bet = Number(betAmount.value);
+  const bet = Number(document.getElementById("betAmount").value);
   const pick = Number(selectedHorse.value);
   if (isNaN(bet) || bet <= 0 || bet > currentScore) {
     alert("掛け金が正しくありません");
@@ -272,28 +293,42 @@ startRaceBtn.addEventListener("click", () => {
 
   currentScore -= bet;
   raceResult.textContent = "";
+  
+  const raceDistance = 100; // %
+  const positions = [0,0,0,0];
+  let finished = false;
 
-  // ランダムでゴール位置を決定
-  const finishPositions = horses.map(() => Math.random());
-  const winnerIndex = finishPositions.indexOf(Math.max(...finishPositions));
+  const interval = setInterval(() => {
+    horsesData.forEach((h, i) => {
+      if (positions[i] < raceDistance) {
+        // スピード + ランダム補正
+        positions[i] += h.speed + Math.random()*3;
+        if (positions[i] > raceDistance) positions[i] = raceDistance;
+        document.getElementById(`horse${i}`).style.left = positions[i] + "%";
+      }
+    });
 
-  // 馬アニメーション
-  horses.forEach((horse, i) => {
-    horse.style.left = (finishPositions[i] * 80) + "%";
-  });
+    if (!finished && positions.some(p => p >= raceDistance)) {
+      finished = true;
+      clearInterval(interval);
 
-  setTimeout(() => {
-    let gain = 0;
-    if (pick - 1 === winnerIndex) {
-      gain = bet * 5; // 1位なら5倍
-      raceResult.textContent = `🎉 あなたの馬が1位！ +${gain}点`;
-    } else {
-      raceResult.textContent = `😢 外れました。掛け金-${bet}点`;
+      // 順位計算
+      const horseRank = positions.map((p,i)=>({i,p})).sort((a,b)=>b.p-a.p).map(e=>e.i);
+      const winnerIndex = horseRank[0];
+
+      let gain = 0;
+      if (pick === winnerIndex) {
+        gain = bet * 5; // 当たれば5倍
+        raceResult.textContent = `🎉 あなたの馬が1位！ +${gain}点`;
+      } else {
+        raceResult.textContent = `😢 外れました。掛け金-${bet}点`;
+      }
+
+      currentScore += gain;
+
+      // ランキング送信
+      const name = playerNameInput.value.trim() || "名無し";
+      socket.emit("score", { name, score: currentScore });
     }
-    currentScore += gain;
-
-    // ランキング送信
-    const name = playerNameInput.value.trim() || "名無し";
-    socket.emit("score", { name, score: currentScore });
-  }, 1200); // アニメーション後に結果表示
+  }, 500);
 });
