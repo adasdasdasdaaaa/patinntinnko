@@ -8,29 +8,39 @@ const resultDiv = document.getElementById("result");
 const playerNameInput = document.getElementById("playerName");
 const rankingList = document.getElementById("rankingList");
 
-let currentScore = 0;
+let currentScore = 100; // 初期スコア100点
+const costPerSpin = 10; // 回すごとに10ポイント消費
 
 // スロットを回す
 spinBtn.addEventListener("click", () => {
+  if (currentScore < costPerSpin) {
+    resultDiv.textContent = "⚠ スコアが足りません！";
+    return;
+  }
+
+  currentScore -= costPerSpin; // 回すごとに消費
+
   const results = reels.map(r => {
     const symbol = symbols[Math.floor(Math.random() * symbols.length)];
     r.textContent = symbol;
     return symbol;
   });
 
-  let score = 0;
+  let gain = 0; // 今回の得点
+
   if (results.every(s => s === results[0])) {
-    score = 810; // 大当たりは200点に変更
-    resultDiv.textContent = "🎉 大当たり！ +810点";
+    gain = 810; // 大当たり
+    resultDiv.textContent = `🎉 大当たり！ +${gain}点`;
   } else if (new Set(results).size === 2) {
-    score = 60; // 2つ揃い
-    resultDiv.textContent = "✨ チャンス！ +60点";
+    gain = 50; // 2つ揃い
+    resultDiv.textContent = `✨ チャンス！ +${gain}点`;
   } else {
-    score = -5; // ハズレでも参加点
-    resultDiv.textContent = "😢 ハズレ... -5点";
+    gain = 0; // ハズレ
+    resultDiv.textContent = `😢 ハズレ... +0点`;
   }
 
-  currentScore += score;
+  currentScore += gain;
+  resultDiv.textContent += ` | 現在のスコア: ${currentScore}`;
 });
 
 // ランキングに送信
