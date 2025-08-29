@@ -251,3 +251,49 @@ function useItem(index) {
   inventory.splice(index, 1);
   updateInventory();
 }
+
+const startRaceBtn = document.getElementById("startRaceBtn");
+const betAmount = document.getElementById("betAmount");
+const selectedHorse = document.getElementById("selectedHorse");
+const raceResult = document.getElementById("raceResult");
+const horses = [
+  document.getElementById("horse1"),
+  document.getElementById("horse2"),
+  document.getElementById("horse3")
+];
+
+startRaceBtn.addEventListener("click", () => {
+  const bet = Number(betAmount.value);
+  const pick = Number(selectedHorse.value);
+  if (isNaN(bet) || bet <= 0 || bet > currentScore) {
+    alert("掛け金が正しくありません");
+    return;
+  }
+
+  currentScore -= bet;
+  raceResult.textContent = "";
+
+  // ランダムでゴール位置を決定
+  const finishPositions = horses.map(() => Math.random());
+  const winnerIndex = finishPositions.indexOf(Math.max(...finishPositions));
+
+  // 馬アニメーション
+  horses.forEach((horse, i) => {
+    horse.style.left = (finishPositions[i] * 80) + "%";
+  });
+
+  setTimeout(() => {
+    let gain = 0;
+    if (pick - 1 === winnerIndex) {
+      gain = bet * 5; // 1位なら5倍
+      raceResult.textContent = `🎉 あなたの馬が1位！ +${gain}点`;
+    } else {
+      raceResult.textContent = `😢 外れました。掛け金-${bet}点`;
+    }
+    currentScore += gain;
+
+    // ランキング送信
+    const name = playerNameInput.value.trim() || "名無し";
+    socket.emit("score", { name, score: currentScore });
+  }, 1200); // アニメーション後に結果表示
+});
