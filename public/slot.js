@@ -332,3 +332,8 @@ startRaceBtn.addEventListener("click", () => {
     }
   }, 500);
 });
+
+// 回転中のBGM
+const spinMusic = new Audio("/sounds/電子ルーレット回転中.mp3");
+spinMusic.loop = true;  // ループ再生
+spinMusic.volume = 0.5; // 音量調整
