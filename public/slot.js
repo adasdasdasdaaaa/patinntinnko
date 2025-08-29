@@ -17,10 +17,15 @@ const resultDiv = document.getElementById("result");
 const playerNameInput = document.getElementById("playerName");
 const rankingList = document.getElementById("rankingList");
 
+// 効果音
+const stopSound = new Audio("/sounds/決定ボタンを押す7.mp3");
+const bigWinSound = new Audio("/sounds/bigwin.mp3"); // 任意で大当たり音
+
 let currentScore = 100;
 const costPerSpin = 10;
 let intervals = []; // 各リールの回転用
 
+// スロット回転開始
 function startSpin() {
   if (currentScore < costPerSpin) {
     resultDiv.textContent = "⚠ スコアが足りません！";
@@ -29,27 +34,30 @@ function startSpin() {
   currentScore -= costPerSpin;
   resultDiv.textContent = "";
 
-  // 各リールを回す
   reels.forEach((reel, i) => {
     intervals[i] = setInterval(() => {
       reel.textContent = symbols[Math.floor(Math.random() * symbols.length)];
     }, 100);
   });
 
-  // ボタン活性化
   stopBtns.forEach(btn => btn.disabled = false);
 }
 
+// 各リール停止
 function stopReel(index) {
   clearInterval(intervals[index]);
   stopBtns[index].disabled = true;
 
-  // 全リール止まったら判定
+  // 止める音を再生
+  stopSound.currentTime = 0;
+  stopSound.play();
+
   if (stopBtns.every(btn => btn.disabled)) {
     calculateScore();
   }
 }
 
+// スコア計算＆演出
 function calculateScore() {
   const results = reels.map(r => r.textContent);
   let gain = 0;
@@ -61,12 +69,15 @@ function calculateScore() {
 
     // 光る演出
     document.body.classList.add("flash");
-    setTimeout(() => document.body.classList.remove("flash"), 1500); // 3回分で削除
+    setTimeout(() => document.body.classList.remove("flash"), 1500);
+
+    // 大当たり音（任意）
+    // bigWinSound.play();
   } else if (new Set(results).size === 2) {
-    gain = 100; // 2つ揃い
+    gain = 70; // 2つ揃い
     resultDiv.textContent = `✨ チャンス！ +${gain}点`;
   } else {
-    gain = 0; // ハズレ
+    gain = 0;
     resultDiv.textContent = `😢 ハズレ... +0点`;
   }
 
@@ -85,7 +96,7 @@ stopBtns.forEach((btn, i) => {
 // ランキングに送信
 publishBtn.addEventListener("click", () => {
   const name = playerNameInput.value.trim() || "名無し";
-  socket.emit("score", { name, score: currentScore });
+  socket.emit("score", { name, score: Number(currentScore) });
 });
 
 // ランキングを受信
