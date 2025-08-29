@@ -52,3 +52,57 @@ button {
 .flash {
   animation: flash 0.5s ease-in-out 3; /* 0.5秒で3回光る */
 }
+/* FX 投資パネル全体 */
+.fx-panel {
+  background: #f0f0f0;       /* 明るいグレー背景 */
+  padding: 20px;             /* 内側余白 */
+  border-top: 2px solid #ccc; /* 上の区切り線 */
+  margin-top: 20px;          /* 上との余白 */
+  border-radius: 8px;        /* 角丸 */
+  max-width: 400px;          /* 幅制限 */
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2); /* 軽い影 */
+}
+
+/* 見出し */
+.fx-panel h2 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  font-size: 1.3em;
+  color: #333;
+}
+
+/* 投資入力欄 */
+.fx-panel label {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.fx-panel input {
+  width: 100px;
+  padding: 5px;
+  margin-left: 5px;
+  border: 1px solid #aaa;
+  border-radius: 4px;
+}
+
+/* 投資ボタン */
+.fx-panel button {
+  padding: 8px 12px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.fx-panel button:hover {
+  background-color: #45a049;
+}
+
+/* 結果表示 */
+.fx-panel #fxResult {
+  margin-top: 10px;
+  font-weight: bold;
+  color: #555;
+}
